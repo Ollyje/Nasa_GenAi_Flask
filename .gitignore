@@ -4,3 +4,4 @@ venv/
 nasakey.txt
 .cache-*
 nasa.py
+__pycache__/

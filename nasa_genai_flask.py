@@ -15,7 +15,7 @@ with open('nasakey.txt', 'r') as nasa_file:
 
 messages = [
 	{"role": "system", "content": "In a poem, always convert kilometres per second to miles per hour"},
-	{"role": "user", "content": "Find the speed of the latest Coronal Mass Ejection in km/s"}
+	# {"role": "user", "content": "Find the speed of the latest Coronal Mass Ejection in km/s"}
 ]
 
 def cme_speed(cme_date, mph):
@@ -56,44 +56,49 @@ functions = [
 
 ]
 
-response = client.chat.completions.create(
-	model = "GPT-4",
-	messages = messages,
-	tools = functions,
-	# auto means chatgpt decides when to use external functions
-	tool_choice = "auto"
-)
 
-# print(response.choices[0].message)
-response_message = response.choices[0].message 
-gpt_tools = response.choices[0].message.tool_calls
 
-if gpt_tools:
-	available_functions = {
-			"get_speed": cme_speed
-	}
+def ask_question(user_question):
+	# building a conversaiton form the user
+	messages.append({"role": "user", "content": user_question})
 
-	messages.append(response_message)
-	for gpt_tool in gpt_tools:
-		function_name = gpt_tool.function.name
-		function_to_call = available_functions[function_name]
-		function_parameters = json.loads(gpt_tool.function.arguments)
-		function_response = function_to_call(function_parameters.get('cme_date'), function_parameters.get('mph'))
-		messages.append(
-			{
-				"tool_call_id": gpt_tool.id,
-				"role": "tool",
-				"name": function_name,
-				"content": function_response
-			}
-		)
-		second_response = client.chat.completions.create(
-			model = "GPT-4",
-			messages=messages
-		)
-		print(second_response.choices[0].message.content)
 
-else:
-	print(response.choices[0].message.content)
+	response = client.chat.completions.create(
+		model = "GPT-4",
+		messages = messages,
+		tools = functions,
+		# auto means chatgpt decides when to use external functions
+		tool_choice = "auto"
+	)
 
-# print(response.choices[0].message)
+	# print(response.choices[0].message)
+	response_message = response.choices[0].message 
+	gpt_tools = response.choices[0].message.tool_calls
+
+	if gpt_tools:
+		available_functions = {
+				"get_speed": cme_speed
+		}
+
+		messages.append(response_message)
+		for gpt_tool in gpt_tools:
+			function_name = gpt_tool.function.name
+			function_to_call = available_functions[function_name]
+			function_parameters = json.loads(gpt_tool.function.arguments)
+			function_response = function_to_call(function_parameters.get('cme_date'), function_parameters.get('mph'))
+			messages.append(
+				{
+					"tool_call_id": gpt_tool.id,
+					"role": "tool",
+					"name": function_name,
+					"content": function_response
+				}
+			)
+			second_response = client.chat.completions.create(
+				model = "GPT-4",
+				messages=messages
+			)
+			return second_response.choices[0].message.content
+
+	else:
+		return response.choices[0].message.content
