@@ -1,0 +1,6 @@
+venv/
+.ipynb_checkpoints/
+.git/
+nasakey.txt
+.cache-*
+nasa.py
