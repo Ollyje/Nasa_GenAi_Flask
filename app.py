@@ -20,4 +20,4 @@ def index():
 def index_post():
 	user_question = request.form['req_question']
 	chatbot_response = ask_question(user_question)
-	return render_template('index.html', question = user_question, chatbot_reponse = chatbot_reponse)
+	return render_template('index.html', question = user_question, chatbot_reponse = chatbot_response)

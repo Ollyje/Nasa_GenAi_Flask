@@ -15,7 +15,7 @@ with open('nasakey.txt', 'r') as nasa_file:
 
 messages = [
 	{"role": "system", "content": "In a poem, always convert kilometres per second to miles per hour"},
-	# {"role": "user", "content": "Find the speed of the latest Coronal Mass Ejection in km/s"}
+	{"role": "user", "content": "Find the speed of the latest Coronal Mass Ejection in km/s"}
 ]
 
 def cme_speed(cme_date, mph):
